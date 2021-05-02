@@ -1,0 +1,53 @@
+
+<div class="wrapper">
+<div class="card" *ngFor="let data of jsondata">
+
+<ul>
+  <li>название счетчика meterName: {{data.meterName }}</li>
+  <li>название канала данных channelName{{data.channelName }} </li>
+</ul>
+  </div>
+
+
+
+
+
+<div>
+ <ul>
+   Час когда было использовано максимум электричества
+  <li>
+    <button [disabled]="clicked" *ngIf="isCollapsed" (click)="toggleColapse()"> Получить</button>
+    <button *ngIf="!isCollapsed" (click)="toggleColapse()"> Скрыть</button>
+
+    <div *ngIf="!isCollapsed">
+      {{this.calcMaxhour()}}
+
+    </div>
+
+
+
+  </li>
+   День когда было использовано минимум электричества
+   <li>
+     <button *ngIf="isCollapsednw" (click)="toggleColapsenw()"> Получить</button>
+     <button *ngIf="!isCollapsednw" (click)="toggleColapsenw()"> Скрыть</button>
+
+     <div *ngIf="!isCollapsednw">
+       {{this.calcMinday()}}
+     </div>
+
+   </li>
+
+Среднечасовая использованная энергия
+  <li>
+
+    <button *ngIf="isCollapsedn" (click)="toggleColapsen()"> Получить</button>
+    <button *ngIf="!isCollapsedn" (click)="toggleColapsen()"> Скрыть</button>
+
+    <div *ngIf="!isCollapsedn">
+      {{this.calcAverageValue()}}
+    </div>
+
+  </li>
+ </ul>
+</div>
