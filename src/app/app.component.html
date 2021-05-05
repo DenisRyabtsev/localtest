@@ -7,11 +7,11 @@
     <ul>
       Час когда было использовано максимум электричества
       <li>
-        <button [disabled]="clicked" *ngIf="isCollapsed" (click)="toggleColapse()"> Получить</button>
-        <button *ngIf="!isCollapsed" (click)="toggleColapse()"> Скрыть</button>
+        <button  *ngIf="sotrEnergyHourly == null" (click)=" getMaximumHour()"> Получить</button>
 
-        <div *ngIf="!isCollapsed">
-          {{this.calcMaxhour()}}
+
+        <div *ngIf="sotrEnergyHourly!">
+          {{sotrEnergyHourly[0].time.format('hh:mm LL')}}
 
         </div>
 
@@ -19,12 +19,14 @@
       </li>
       День когда было использовано минимум электричества
       <li>
-        <button *ngIf="isCollapsednw" (click)="toggleColapsenw()"> Получить</button>
-        <button *ngIf="!isCollapsednw" (click)="toggleColapsenw()"> Скрыть</button>
+        <button  *ngIf="sotrEnergyDaily == null" (click)="  getMinimumDay()"> Получить</button>
 
-        <div *ngIf="!isCollapsednw">
-          {{this.calcMinday()}}
+
+        <div *ngIf="sotrEnergyDaily!">
+          {{sotrEnergyDaily[0].time.format('LL')}}
+
         </div>
+
 
       </li>
 
