@@ -33,21 +33,18 @@ export class AppComponent implements OnInit {
         this.energyData = this.parseEnergyData(this.meterData);
         this.energyHourlyData = this.wrapToHourlyData(this.energyData);
         this.energyDailyData = this.wrapToDayData(this.energyData);
+        console.log(this.energyData)
+        console.log(this.energyHourlyData)
+        console.log(this.energyDailyData)
+
       }
     });
   }
 
   private parseEnergyData(data: JsonData): MomentValue[] {
 
-    //   return data.recordValues.map(keyValuePair => new MomentValue(moment.unix(keyValuePair.Key), keyValuePair.Value));
-    // }
-    return data.recordValues.map((item) => ({
-          time: moment(+item.Key),
-          value: item.Value,
-        }));
-
-  }
-
+      return data.recordValues.map(keyValuePair => new MomentValue(moment(+keyValuePair.Key), keyValuePair.Value));
+    }
 
 
   getMaximumHour(){
@@ -71,11 +68,11 @@ export class AppComponent implements OnInit {
 
   private wrapToHourlyData(energyData: MomentValue[]): MomentValue[] {
     const updatedValueHourly = energyData.reduce((acc: any, curr: any) => {
-      const date = new Date(curr.time);
+      const date = moment(curr.time);
       const findElement = acc.find((item) => {
         return (
-          new Date(item?.time).getHours() === date.getHours() &&
-          new Date(item?.time).getDate() === date.getDate()
+          moment(item.time).hour() === date.hour() &&
+          moment(item.time).date() === date.date()
         )
       });
 
@@ -96,11 +93,11 @@ export class AppComponent implements OnInit {
 
   private wrapToDayData(energyData: MomentValue[]): MomentValue[] {
     const updatedValueDay = energyData.reduce((acc: any, curr: any) => {
-      const date = new Date(curr.time);
+      const date = moment(curr.time);
       const findElement = acc.find((item) => {
         return (
-          new Date(item?.time).getDate() === date.getDate()
-        )
+          moment(item.time).date() === date.date()
+        );
       });
 
       if (findElement) {
