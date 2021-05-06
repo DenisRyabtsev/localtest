@@ -33,24 +33,21 @@ export class AppComponent implements OnInit {
         this.energyData = this.parseEnergyData(this.meterData);
         this.energyHourlyData = this.wrapToHourlyData(this.energyData);
         this.energyDailyData = this.wrapToDayData(this.energyData);
-        console.log(this.energyData)
-        console.log(this.energyHourlyData)
-        console.log(this.energyDailyData)
-
       }
     });
   }
 
   private parseEnergyData(data: JsonData): MomentValue[] {
 
-      return data.recordValues.map(keyValuePair => new MomentValue(moment(+keyValuePair.Key), keyValuePair.Value));
-    }
+    return data.recordValues.map(keyValuePair => new MomentValue(moment(+keyValuePair.Key), keyValuePair.Value));
+  }
 
 
-  getMaximumHour(){
+  getMaximumHour() {
     this.sotrEnergyHourly = this.energyHourlyData.sort((a, b) => b.value - a.value);
   }
-  getMinimumDay(){
+
+  getMinimumDay() {
     this.sotrEnergyDaily = this.energyDailyData.sort((a, b) => a.value - b.value);
   }
 
@@ -65,15 +62,14 @@ export class AppComponent implements OnInit {
   }
 
 
-
   private wrapToHourlyData(energyData: MomentValue[]): MomentValue[] {
     const updatedValueHourly = energyData.reduce((acc: any, curr: any) => {
-      const date = moment(curr.time);
+      const date = curr.time;
       const findElement = acc.find((item) => {
         return (
-          moment(item.time).hour() === date.hour() &&
-          moment(item.time).date() === date.date()
-        )
+          item.time.hour() === date.hour() &&
+          item.time.date() === date.date()
+        );
       });
 
       if (findElement) {
@@ -93,10 +89,10 @@ export class AppComponent implements OnInit {
 
   private wrapToDayData(energyData: MomentValue[]): MomentValue[] {
     const updatedValueDay = energyData.reduce((acc: any, curr: any) => {
-      const date = moment(curr.time);
+      const date = curr.time;
       const findElement = acc.find((item) => {
         return (
-          moment(item.time).date() === date.date()
+          item.time.date() === date.date()
         );
       });
 
@@ -113,3 +109,4 @@ export class AppComponent implements OnInit {
     return updatedValueDay;
   }
 }
+
