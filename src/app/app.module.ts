@@ -6,14 +6,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { HelloComponent } from './hello.component';
 import { JsonService } from './json.service';
+import { DaterangepickerComponent } from './daterangepicker/daterangepicker.component';
 
 @NgModule({
   imports:      [
     BrowserModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+
   ],
-  declarations: [ AppComponent, HelloComponent ],
+  declarations: [ AppComponent, HelloComponent, DaterangepickerComponent],
   providers: [
     JsonService
   ],

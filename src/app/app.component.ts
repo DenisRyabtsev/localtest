@@ -1,8 +1,13 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit} from '@angular/core';
+import {MomentValue} from './MomentValue';
 import {JsonService} from './json.service';
 import * as moment from 'moment';
-import {MomentValue} from './MomentValue';
 import {JsonData} from './JsonData';
+
+import 'daterangepicker';
+import $ from 'jquery';
+
+
 
 
 @Component({
@@ -11,6 +16,10 @@ import {JsonData} from './JsonData';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+
+  constructor(private jsonService: JsonService) {
+  }
+;
   private energyData: MomentValue[];
   private energyHourlyData: MomentValue[];
   private energyDailyData: MomentValue[];
@@ -18,12 +27,11 @@ export class AppComponent implements OnInit {
   avgHourly: number;
   sotrEnergyHourly;
   sotrEnergyDaily;
+  isJqueryWorking: string
 
 
-  constructor(private jsonService: JsonService) {
-  }
 
-  clicked = false;
+
 
 
   ngOnInit(): void {
@@ -84,8 +92,7 @@ export class AppComponent implements OnInit {
     }, []);
 
     return updatedValueHourly;
-  };
-
+  }
 
   private wrapToDayData(energyData: MomentValue[]): MomentValue[] {
     const updatedValueDay = energyData.reduce((acc: any, curr: any) => {
@@ -108,5 +115,6 @@ export class AppComponent implements OnInit {
     }, []);
     return updatedValueDay;
   }
+
 }
 
