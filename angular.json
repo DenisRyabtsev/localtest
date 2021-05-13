@@ -91,8 +91,9 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"                          ],
-            "scripts": []
+              "src/styles.css",
+              "node_modules/ng2-daterangepicker/assets/daterangepicker.css"],
+            "scripts": ["node_modules/jquery/dist/jquery.min.js"]
           }
         },
         "lint": {
