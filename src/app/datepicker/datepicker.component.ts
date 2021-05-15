@@ -1,7 +1,10 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, EventEmitter, Output, ViewChild} from '@angular/core';
 import * as moment from 'moment';
 import {JsonData} from '../JsonData';
 import { DaterangepickerComponent } from 'ng2-daterangepicker';
+export interface RangeValues {
+  start?: any; end?: any;
+};
 
 
 @Component({
@@ -12,19 +15,26 @@ import { DaterangepickerComponent } from 'ng2-daterangepicker';
 export class DatepickerComponent implements OnInit {
 
   @Input() meterData: JsonData;
-
+  @Output() SelectedInterval = new EventEmitter();
   @ViewChild(DaterangepickerComponent)
   private picker: DaterangepickerComponent;
+  public daterange: RangeValues = {};
+  pushValue() {this.SelectedInterval.emit(this.daterange);
+  };
 
 
   public options: any = {
     locale: { format: 'YYYY-MM-DD HH:mm' },
     alwaysShowCalendars: false,
+    timePicker:true,
+    timePicker24Hour:true,
+    timePickerIncrement: 15,
   };
 
 
   public selectedDateJson(value: any) {
-    console.log(value);
+    this.daterange.start = value.start;
+    this.daterange.end = value.end;
   }
 
   resetDate1() {

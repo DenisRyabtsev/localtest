@@ -3,7 +3,7 @@ import {MomentValue} from './MomentValue';
 import {JsonService} from './json.service';
 import * as moment from 'moment';
 import {JsonData} from './JsonData';
-
+ import {RangeValues} from './datepicker/datepicker.component';
 
 @Component({
   selector: 'app',
@@ -14,15 +14,17 @@ export class AppComponent implements OnInit {
 
   constructor(private jsonService: JsonService) {
   };
-
+  private updatedArr: MomentValue[];
   private energyData: MomentValue[];
+
   private energyHourlyData: MomentValue[];
   private energyDailyData: MomentValue[];
+
   meterData: JsonData;
   avgHourly: number;
   sotrEnergyHourly;
   sotrEnergyDaily;
-
+  public daterange: RangeValues = {};
 
 
   ngOnInit(): void {
@@ -32,18 +34,25 @@ export class AppComponent implements OnInit {
         this.energyData = this.parseEnergyData(this.meterData);
         this.energyHourlyData = this.wrapToHourlyData(this.energyData);
         this.energyDailyData = this.wrapToDayData(this.energyData);
-      //  console.log(this.meterData)
 
-
-      }
+         }
     });
 
   }
-
-
   private parseEnergyData(data: JsonData): MomentValue[] {
 
     return data.recordValues.map(keyValuePair => new MomentValue(moment(+keyValuePair.Key), keyValuePair.Value));
+  }
+
+
+  getSelectedInterval(daterang: RangeValues) {
+    this.daterange.start = daterang.start;
+    this.daterange.end = daterang.end;
+    console.log('this.daterange.end', this.daterange.end);
+    this.updatedArr = this.energyData.filter((item) => {
+      return item.time >= moment(this.daterange.start) && item.time <= moment(this.daterange.end);
+    });
+    return this.energyData = this.updatedArr, console.log(this.energyData);
   }
 
 
@@ -56,17 +65,17 @@ export class AppComponent implements OnInit {
   }
 
 
-  calculateAvgHourly() {
+calculateAvgHourly() {
     let sum = 0;
     for (const point of this.energyHourlyData) {
       sum += point.value;
     }
-
     this.avgHourly = sum / this.energyHourlyData.length;
-  }
+  };
 
 
-  private wrapToHourlyData(energyData: MomentValue[]): MomentValue[] {
+private wrapToHourlyData(energyData: MomentValue[]): MomentValue[] {
+
     const updatedValueHourly = energyData.reduce((acc: any, curr: any) => {
       const date = curr.time;
       const findElement = acc.find((item) => {
@@ -112,6 +121,7 @@ export class AppComponent implements OnInit {
     return updatedValueDay;
 
 }
+
 
 }
 

@@ -44,7 +44,6 @@
   </div>
 </div>
 
-<app-datepicker [meterData]="meterData"></app-datepicker>
-
+<app-datepicker [meterData]="meterData" (SelectedInterval)="getSelectedInterval($event)"></app-datepicker>
 
 
