@@ -3,7 +3,7 @@ import {MomentValue} from './MomentValue';
 import {JsonService} from './json.service';
 import * as moment from 'moment';
 import {JsonData} from './JsonData';
- import {RangeValues} from './datepicker/datepicker.component';
+import {RangeValues} from './datepicker/datepicker.component';
 
 @Component({
   selector: 'app',
@@ -14,12 +14,11 @@ export class AppComponent implements OnInit {
 
   constructor(private jsonService: JsonService) {
   };
-  private updatedArr: MomentValue[];
+
+  private updatedAr: MomentValue[];
   private energyData: MomentValue[];
-
-  private energyHourlyData: MomentValue[];
-  private energyDailyData: MomentValue[];
-
+  private updatedValueHourly: MomentValue[];
+  private updatedValueDay: MomentValue[];
   meterData: JsonData;
   avgHourly: number;
   sotrEnergyHourly;
@@ -32,51 +31,39 @@ export class AppComponent implements OnInit {
       if (jsondata.length > 0) {
         this.meterData = jsondata[0];
         this.energyData = this.parseEnergyData(this.meterData);
-        this.energyHourlyData = this.wrapToHourlyData(this.energyData);
-        this.energyDailyData = this.wrapToDayData(this.energyData);
-
-         }
+      }
     });
-
   }
+
   private parseEnergyData(data: JsonData): MomentValue[] {
 
     return data.recordValues.map(keyValuePair => new MomentValue(moment(+keyValuePair.Key), keyValuePair.Value));
   }
 
-
   getSelectedInterval(daterang: RangeValues) {
     this.daterange.start = daterang.start;
     this.daterange.end = daterang.end;
-    console.log('this.daterange.end', this.daterange.end);
-    this.updatedArr = this.energyData.filter((item) => {
-      return item.time >= moment(this.daterange.start) && item.time <= moment(this.daterange.end);
-    });
-    return this.energyData = this.updatedArr, console.log(this.energyData);
   }
 
-
-  getMaximumHour() {
-    this.sotrEnergyHourly = this.energyHourlyData.sort((a, b) => b.value - a.value);
-  }
-
-  getMinimumDay() {
-    this.sotrEnergyDaily = this.energyDailyData.sort((a, b) => a.value - b.value);
-  }
-
-
-calculateAvgHourly() {
-    let sum = 0;
-    for (const point of this.energyHourlyData) {
-      sum += point.value;
+  private sortValuesInterval(): MomentValue[] {
+    let dataStart;
+    let dataEnd;
+    if (this.daterange.start && this.daterange.end) {
+      dataStart = this.daterange.start,
+        dataEnd = this.daterange.end;
+    } else {
+      dataStart = moment(+this.meterData.firstRecord),
+        dataEnd = moment(+this.meterData.lastRecord);
     }
-    this.avgHourly = sum / this.energyHourlyData.length;
-  };
+    this.updatedAr = this.energyData.filter((item) => {
+      return item.time >= dataStart && item.time <= dataEnd;
+    });
+    return this.updatedAr;
+  }
 
-
-private wrapToHourlyData(energyData: MomentValue[]): MomentValue[] {
-
-    const updatedValueHourly = energyData.reduce((acc: any, curr: any) => {
+  private wrapToHourlyData(): MomentValue[] {
+    this.sortValuesInterval();
+    this.updatedValueHourly = this.updatedAr.reduce((acc: any, curr: any) => {
       const date = curr.time;
       const findElement = acc.find((item) => {
         return (
@@ -96,11 +83,12 @@ private wrapToHourlyData(energyData: MomentValue[]): MomentValue[] {
       return acc;
     }, []);
 
-    return updatedValueHourly;
+    return this.updatedValueHourly;
   }
 
-  private wrapToDayData(energyData: MomentValue[]): MomentValue[] {
-    const updatedValueDay = energyData.reduce((acc: any, curr: any) => {
+  private wrapToDayData(): MomentValue[] {
+    this.sortValuesInterval()
+    this.updatedValueDay = this.updatedAr.reduce((acc: any, curr: any) => {
       const date = curr.time;
       const findElement = acc.find((item) => {
         return (
@@ -118,12 +106,30 @@ private wrapToHourlyData(energyData: MomentValue[]): MomentValue[] {
       }
       return acc;
     }, []);
-    return updatedValueDay;
+    return this.updatedValueDay;
+
+  }
+
+
+  getMaximumHour() {
+    this.wrapToHourlyData()
+    this.sotrEnergyHourly = this.updatedValueHourly.sort((a, b) => b.value - a.value);
+  }
+
+  getMinimumDay() {
+    this.wrapToDayData()
+    this.sotrEnergyDaily = this.updatedValueDay.sort((a, b) => a.value - b.value);
+  }
+
+
+  calculateAvgHourly() {
+    this.wrapToHourlyData()
+    let sum = 0;
+    for (const point of this.updatedValueHourly) {
+      sum += point.value;
+    }
+    this.avgHourly = sum / this.updatedValueHourly.length;
+  };
+
 
 }
-
-
-}
-
-
-
