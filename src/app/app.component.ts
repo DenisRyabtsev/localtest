@@ -4,6 +4,7 @@ import {JsonService} from './json.service';
 import * as moment from 'moment';
 import {JsonData} from './JsonData';
 import {RangeValues} from './datepicker/datepicker.component';
+import {fromEvent, of} from 'rxjs'
 
 @Component({
   selector: 'app',
@@ -24,7 +25,16 @@ export class AppComponent implements OnInit {
   sotrEnergyHourly;
   sotrEnergyDaily;
   public daterange: RangeValues = {};
+  public y = 4593876893.35;
 
+
+  private energyHorlyData: MomentValue[];
+  private energyDailyData: MomentValue[];
+
+
+  f = of("fhjgf").subscribe((e) => {
+    console.log('Mouse event:', e, '${index}')
+});
 
   ngOnInit(): void {
     this.jsonService.getData().subscribe(jsondata => {
@@ -32,6 +42,7 @@ export class AppComponent implements OnInit {
         this.meterData = jsondata[0];
         this.energyData = this.parseEnergyData(this.meterData);
       }
+
     });
   }
 
@@ -62,8 +73,7 @@ export class AppComponent implements OnInit {
   }
 
   private wrapToHourlyData(): MomentValue[] {
-    this.sortValuesInterval();
-    this.updatedValueHourly = this.updatedAr.reduce((acc: any, curr: any) => {
+    this.updatedValueHourly =  this.sortValuesInterval().reduce((acc: any, curr: any) => {
       const date = curr.time;
       const findElement = acc.find((item) => {
         return (
@@ -87,8 +97,7 @@ export class AppComponent implements OnInit {
   }
 
   private wrapToDayData(): MomentValue[] {
-    this.sortValuesInterval()
-    this.updatedValueDay = this.updatedAr.reduce((acc: any, curr: any) => {
+    this.updatedValueDay = this.sortValuesInterval().reduce((acc: any, curr: any) => {
       const date = curr.time;
       const findElement = acc.find((item) => {
         return (
@@ -112,13 +121,11 @@ export class AppComponent implements OnInit {
 
 
   getMaximumHour() {
-    this.wrapToHourlyData()
-    this.sotrEnergyHourly = this.updatedValueHourly.sort((a, b) => b.value - a.value);
+    this.sotrEnergyHourly = this.wrapToHourlyData().sort((a, b) => b.value - a.value);
   }
 
   getMinimumDay() {
-    this.wrapToDayData()
-    this.sotrEnergyDaily = this.updatedValueDay.sort((a, b) => a.value - b.value);
+    this.sotrEnergyDaily = this.wrapToDayData().sort((a, b) => a.value - b.value);
   }
 
 

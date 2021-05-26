@@ -2,6 +2,7 @@ import {Component, Input, OnInit, EventEmitter, Output, ViewChild} from '@angula
 import * as moment from 'moment';
 import {JsonData} from '../JsonData';
 import { DaterangepickerComponent } from 'ng2-daterangepicker';
+import {Subject} from 'rxjs';
 export interface RangeValues {
   start?: any; end?: any;
 };
@@ -22,7 +23,7 @@ export class DatepickerComponent implements OnInit {
   pushValue() {this.SelectedInterval.emit(this.daterange);
   };
 
-
+  public date$ = new Subject();
   public options: any = {
     locale: { format: 'YYYY-MM-DD HH:mm' },
     alwaysShowCalendars: false,
@@ -35,7 +36,7 @@ export class DatepickerComponent implements OnInit {
   public selectedDateJson(value: any) {
     this.daterange.start = value.start;
     this.daterange.end = value.end;
-  }
+         }
 
   resetDate1() {
     this.picker.datePicker.setStartDate(moment(+this.meterData.firstRecord));

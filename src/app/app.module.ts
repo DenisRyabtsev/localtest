@@ -7,6 +7,7 @@ import { HelloComponent } from './hello.component';
 import { JsonService } from './json.service';
 import { Daterangepicker } from 'ng2-daterangepicker';
 import { DatepickerComponent } from './datepicker/datepicker.component';
+import { RxjsComponent } from './rxjs/rxjs.component';
 
 
 @NgModule({
@@ -18,9 +19,9 @@ import { DatepickerComponent } from './datepicker/datepicker.component';
 
 
   ],
-  declarations: [ AppComponent, HelloComponent, DatepickerComponent],
+  declarations: [ AppComponent, HelloComponent, DatepickerComponent, RxjsComponent],
   providers: [
-    JsonService
+    JsonService, DatepickerComponent
   ],
   bootstrap:    [ AppComponent ]
 })
