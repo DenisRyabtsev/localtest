@@ -4,7 +4,8 @@ import {JsonService} from './json.service';
 import * as moment from 'moment';
 import {JsonData} from './JsonData';
 import {RangeValues} from './datepicker/datepicker.component';
-import {fromEvent, of} from 'rxjs'
+import {fromEvent, of} from 'rxjs';
+import {DataBusService} from './data-bus.service';
 
 @Component({
   selector: 'app',
@@ -13,47 +14,41 @@ import {fromEvent, of} from 'rxjs'
 })
 export class AppComponent implements OnInit {
 
-  constructor(private jsonService: JsonService) {
-  };
+  constructor(private jsonService: JsonService,
+              private dataBusService: DataBusService) {
+  }
 
   private updatedAr: MomentValue[];
   private energyData: MomentValue[];
   private updatedValueHourly: MomentValue[];
-  private updatedValueDay: MomentValue[];
+  public updatedValueDay: MomentValue[];
+  public updatedValueWeek: MomentValue[];
   meterData: JsonData;
   avgHourly: number;
   sotrEnergyHourly;
   sotrEnergyDaily;
   public daterange: RangeValues = {};
-  public y = 4593876893.35;
 
-
-  private energyHorlyData: MomentValue[];
-  private energyDailyData: MomentValue[];
-
-
-  f = of("fhjgf").subscribe((e) => {
-    console.log('Mouse event:', e, '${index}')
-});
 
   ngOnInit(): void {
     this.jsonService.getData().subscribe(jsondata => {
       if (jsondata.length > 0) {
         this.meterData = jsondata[0];
         this.energyData = this.parseEnergyData(this.meterData);
-      }
-
+        this.dataBusService.pushValueHourly(this.wrapToDayData());
+        this.dataBusService.pushAvgWeek(this.calculateAvgWeek());
+         }
     });
   }
 
   private parseEnergyData(data: JsonData): MomentValue[] {
-
     return data.recordValues.map(keyValuePair => new MomentValue(moment(+keyValuePair.Key), keyValuePair.Value));
   }
 
   getSelectedInterval(daterang: RangeValues) {
     this.daterange.start = daterang.start;
     this.daterange.end = daterang.end;
+    this.dataBusService.pushValueHourly(this.wrapToDayData());
   }
 
   private sortValuesInterval(): MomentValue[] {
@@ -72,7 +67,7 @@ export class AppComponent implements OnInit {
     return this.updatedAr;
   }
 
-  private wrapToHourlyData(): MomentValue[] {
+  public wrapToHourlyData(): MomentValue[] {
     this.updatedValueHourly =  this.sortValuesInterval().reduce((acc: any, curr: any) => {
       const date = curr.time;
       const findElement = acc.find((item) => {
@@ -96,6 +91,10 @@ export class AppComponent implements OnInit {
     return this.updatedValueHourly;
   }
 
+
+
+
+
   private wrapToDayData(): MomentValue[] {
     this.updatedValueDay = this.sortValuesInterval().reduce((acc: any, curr: any) => {
       const date = curr.time;
@@ -116,8 +115,33 @@ export class AppComponent implements OnInit {
       return acc;
     }, []);
     return this.updatedValueDay;
-
   }
+  private wrapToWeekData(): MomentValue[] {
+
+    this.updatedValueWeek = this.sortValuesInterval().reduce((acc: any, curr: any) => {
+      const date = curr.time;
+      const findElement = acc.find((item) => {
+        return (
+          item.time.week() === date.week()
+        );
+      });
+
+      if (findElement) {
+        findElement.value += curr.value;
+      } else {
+        acc.push({
+          time: curr.time,
+          value: curr.value,
+         });
+      }
+      return acc;
+    }, []);
+    return this.updatedValueWeek;
+  }
+
+  calculateAvgWeek() {
+   return  this.wrapToWeekData();
+    }
 
 
   getMaximumHour() {
@@ -130,13 +154,11 @@ export class AppComponent implements OnInit {
 
 
   calculateAvgHourly() {
-    this.wrapToHourlyData()
+    this.wrapToHourlyData();
     let sum = 0;
     for (const point of this.updatedValueHourly) {
       sum += point.value;
     }
     this.avgHourly = sum / this.updatedValueHourly.length;
-  };
-
-
+  }
 }

@@ -27,12 +27,12 @@ export class RxjsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.sub = this.stream$.subscribe((a) =>  console.log(a),
-      (err) => console.log("error",err),
-      ()=>console.log("стрим завершен")),
-      this.sub2 = this.stream$.subscribe((a) =>  console.log(a),
-        (err) => console.log("error",err),
-        ()=>console.log("стрим завершен"))
+    // this.sub = this.stream$.subscribe((a) =>  console.log(a),
+    //   (err) => console.log("error",err),
+    //   ()=>console.log("стрим завершен")),
+    //   this.sub2 = this.stream$.subscribe((a) =>  console.log(a),
+    //     (err) => console.log("error",err),
+    //     ()=>console.log("стрим завершен"))
   }
 
 

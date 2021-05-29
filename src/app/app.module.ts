@@ -8,6 +8,11 @@ import { JsonService } from './json.service';
 import { Daterangepicker } from 'ng2-daterangepicker';
 import { DatepickerComponent } from './datepicker/datepicker.component';
 import { RxjsComponent } from './rxjs/rxjs.component';
+import { HighchartsComponent } from './highcharts/highcharts.component';
+import { HighchartsChartModule } from 'highcharts-angular';
+import {DataBusService} from './data-bus.service';
+import { PiecharthighchartsComponent } from './piecharthighcharts/piecharthighcharts.component';
+
 
 
 @NgModule({
@@ -16,12 +21,12 @@ import { RxjsComponent } from './rxjs/rxjs.component';
     FormsModule,
     HttpClientModule,
     Daterangepicker,
-
+    HighchartsChartModule
 
   ],
-  declarations: [ AppComponent, HelloComponent, DatepickerComponent, RxjsComponent],
+  declarations: [ AppComponent, HelloComponent, DatepickerComponent, RxjsComponent, HighchartsComponent, PiecharthighchartsComponent],
   providers: [
-    JsonService, DatepickerComponent
+    JsonService, DatepickerComponent, DataBusService
   ],
   bootstrap:    [ AppComponent ]
 })

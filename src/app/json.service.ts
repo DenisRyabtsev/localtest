@@ -6,11 +6,12 @@ import {JsonData} from './JsonData';
 @Injectable()
 export class JsonService {
   constructor(private http: HttpClient) {}
-public n = 19;
+
 
   getData(): Observable<JsonData[]> {
     return this.http.get<JsonData[]>('assets/test.json');
   }
+
   // pushData(timestamp: number, value: number) {
   // alert(moment.utc(timestamp).format("MM DD YYYY hh:mm"));
   // }

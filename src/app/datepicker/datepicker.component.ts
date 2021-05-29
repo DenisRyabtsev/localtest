@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import {JsonData} from '../JsonData';
 import { DaterangepickerComponent } from 'ng2-daterangepicker';
 import {Subject} from 'rxjs';
+import {DataBusService} from '../data-bus.service';
 export interface RangeValues {
   start?: any; end?: any;
 };
@@ -23,12 +24,12 @@ export class DatepickerComponent implements OnInit {
   pushValue() {this.SelectedInterval.emit(this.daterange);
   };
 
-  public date$ = new Subject();
+
   public options: any = {
     locale: { format: 'YYYY-MM-DD HH:mm' },
     alwaysShowCalendars: false,
-    timePicker:true,
-    timePicker24Hour:true,
+    timePicker: true,
+    timePicker24Hour: true,
     timePickerIncrement: 15,
   };
 
@@ -36,6 +37,7 @@ export class DatepickerComponent implements OnInit {
   public selectedDateJson(value: any) {
     this.daterange.start = value.start;
     this.daterange.end = value.end;
+
          }
 
   resetDate1() {
@@ -43,11 +45,9 @@ export class DatepickerComponent implements OnInit {
     this.picker.datePicker.setEndDate(moment(+this.meterData.lastRecord));
   }
 
-  constructor() { }
+  constructor(private dataBusService: DataBusService) { }
 
   ngOnInit(): void {
-
-
-  }
+    }
 
 }
