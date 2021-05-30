@@ -6,6 +6,8 @@ import {JsonData} from './JsonData';
 import {RangeValues} from './datepicker/datepicker.component';
 import {fromEvent, of} from 'rxjs';
 import {DataBusService} from './data-bus.service';
+import {AverageValues} from './AverageValues';
+
 
 @Component({
   selector: 'app',
@@ -17,7 +19,7 @@ export class AppComponent implements OnInit {
   constructor(private jsonService: JsonService,
               private dataBusService: DataBusService) {
   }
-
+  public callNumber = 1;
   private updatedAr: MomentValue[];
   private energyData: MomentValue[];
   private updatedValueHourly: MomentValue[];
@@ -28,6 +30,7 @@ export class AppComponent implements OnInit {
   sotrEnergyHourly;
   sotrEnergyDaily;
   public daterange: RangeValues = {};
+
 
 
   ngOnInit(): void {
@@ -49,6 +52,7 @@ export class AppComponent implements OnInit {
     this.daterange.start = daterang.start;
     this.daterange.end = daterang.end;
     this.dataBusService.pushValueHourly(this.wrapToDayData());
+    this.dataBusService.pushAvgWeek(this.calculateAvgWeek())
   }
 
   private sortValuesInterval(): MomentValue[] {
@@ -116,23 +120,30 @@ export class AppComponent implements OnInit {
     }, []);
     return this.updatedValueDay;
   }
-  private wrapToWeekData(): MomentValue[] {
 
-    this.updatedValueWeek = this.sortValuesInterval().reduce((acc: any, curr: any) => {
+  private wrapToWeekData(): AverageValues[] {
+
+    this.updatedValueWeek = this.wrapToDayData().reduce((acc: any, curr: any) => {
+      curr.day = 1;
       const date = curr.time;
       const findElement = acc.find((item) => {
         return (
-          item.time.week() === date.week()
+          item.time.date() === date.date(),
+           item.time.week() === date.week()
         );
       });
 
       if (findElement) {
+       // debugger;
         findElement.value += curr.value;
+        findElement.day++;
       } else {
         acc.push({
           time: curr.time,
           value: curr.value,
-         });
+          day: curr.day
+        });
+
       }
       return acc;
     }, []);

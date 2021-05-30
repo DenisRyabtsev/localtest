@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import {DataBusService} from '../data-bus.service';
-import {MomentValue} from '../MomentValue';
+import {AverageValues} from '../AverageValues';
+
 
 @Component({
   selector: 'app-piecharthighcharts',
@@ -9,7 +10,7 @@ import {MomentValue} from '../MomentValue';
   styleUrls: ['./piecharthighcharts.component.css']
 })
 export class PiecharthighchartsComponent implements OnInit {
-  public energyAvgWeek: MomentValue[];
+  public energyAvgWeek: AverageValues[];
   private energyAvgWeekValue;
 
   highcharts = Highcharts;
@@ -42,8 +43,9 @@ export class PiecharthighchartsComponent implements OnInit {
 
   ngOnInit(): void {
           this.dataBusService.AvgWeek$.subscribe((data) => { this.energyAvgWeek = data;
-          this.energyAvgWeekValue = this.energyAvgWeek.map(({ time, value}) => ([time.format('YYYY/MMMM  wo'), +(value / 7).toFixed(0)]));
+          this.energyAvgWeekValue = this.energyAvgWeek.map(({ time, value, day}) => ([time.format('YYYY/MMMM  wo'), +(value / day).toFixed(0)]));
           this.getChart();
+          console.log(this.energyAvgWeek);
           })
 
 }

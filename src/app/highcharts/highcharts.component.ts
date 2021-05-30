@@ -1,6 +1,5 @@
 import { Component, Input,OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
-import * as Exporting from 'highcharts/modules/exporting';
 import {MomentValue} from '../MomentValue';
 import {Observable} from 'rxjs';
 import {map, timeout} from 'rxjs/operators';
@@ -58,6 +57,7 @@ export class HighchartsComponent implements OnInit {
                                                      this.energyHourlyValue = this.energyHourlyData.map(item => item.value);
                                                      this.startDay = this.energyHourlyData[0].time;
                                                      this.getChart();
+                                                     console.log(this.energyHourlyData);
                                                          })
 }
 }
