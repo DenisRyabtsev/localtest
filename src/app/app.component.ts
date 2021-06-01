@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
         this.energyData = this.parseEnergyData(this.meterData);
         this.dataBusService.pushValueHourly(this.wrapToDayData());
         this.dataBusService.pushAvgWeek(this.calculateAvgWeek());
-         }
+       }
     });
   }
 
@@ -134,7 +134,6 @@ export class AppComponent implements OnInit {
       });
 
       if (findElement) {
-       // debugger;
         findElement.value += curr.value;
         findElement.day++;
       } else {
@@ -172,4 +171,12 @@ export class AppComponent implements OnInit {
     }
     this.avgHourly = sum / this.updatedValueHourly.length;
   }
+  //
+  // public euros = [29.76, 41, 46.5];
+  //
+  // public average = this.euros.reduce((total, amount) => {
+  //   debugger
+  //   total.push(amount * 2);
+  //   return total;
+  // }, []);
 }

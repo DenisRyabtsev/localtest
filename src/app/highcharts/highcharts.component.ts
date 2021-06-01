@@ -14,7 +14,7 @@ import {DataBusService} from '../data-bus.service';
 export class HighchartsComponent implements OnInit {
 
   public energyHourlyData: MomentValue[];
-  public energyHourlyValue: number[];
+  public energyHourlyValue: ( number | number)[][];
   public startDay;
   Highcharts: typeof Highcharts = Highcharts;
   chartOptions: any;
@@ -23,12 +23,14 @@ export class HighchartsComponent implements OnInit {
   getChart() {
     this.chartOptions = {
       series: [{
-        name: 'energy',
+        name: 'energy days',
         pointInterval: 24 * 3600 * 1000,
-        pointStart: this.startDay,
+        //pointStart: this.startDay,
         data: this.energyHourlyValue,
-      },],
+      }, ],
       chart: {
+        panning: true,
+        panKey: 'shift',
         type: 'column',
         zoomType: 'x'
       },
@@ -39,25 +41,24 @@ export class HighchartsComponent implements OnInit {
         enabled: false, // remove logo
       },
 
-        plotOptions: {series: {dataLabels: {
-          enabled: true
-            }}},
+      plotOptions: {series: {dataLabels: {
+        enabled: true
+        }}},
 
       xAxis: {
          type: 'datetime',
          minRange: 15 * 2300 * 36000,
       },
     }
+
   }
 
   constructor(private readonly dataBusService: DataBusService) { }
 
   ngOnInit(): void {
     this.dataBusService.count$.subscribe((data) => { this.energyHourlyData = data;
-                                                     this.energyHourlyValue = this.energyHourlyData.map(item => item.value);
-                                                     this.startDay = this.energyHourlyData[0].time;
+                                                     this.energyHourlyValue = this.energyHourlyData.map((item) => [+item.time, item.value]);
                                                      this.getChart();
-                                                     console.log(this.energyHourlyData);
-                                                         })
+    });
 }
 }
