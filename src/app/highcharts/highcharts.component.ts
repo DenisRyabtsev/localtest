@@ -1,9 +1,7 @@
-import { Component, Input,OnInit } from '@angular/core';
-import * as Highcharts from 'highcharts';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MomentValue} from '../MomentValue';
-import {Observable} from 'rxjs';
-import {map, timeout} from 'rxjs/operators';
 import {DataBusService} from '../data-bus.service';
+import * as Highcharts from 'highcharts';
 
 
 @Component({
@@ -11,23 +9,37 @@ import {DataBusService} from '../data-bus.service';
   templateUrl: './highcharts.component.html',
   styleUrls: ['./highcharts.component.css']
 })
-export class HighchartsComponent implements OnInit {
-
+export class HighchartsComponent implements OnInit, OnDestroy {
   public energyHourlyData: MomentValue[];
-  public energyHourlyValue: ( number | number)[][];
-  public startDay;
-  Highcharts: typeof Highcharts = Highcharts;
   chartOptions: any;
+  highcharts = Highcharts;
+  private readonly MIN_RANGE = 15 * 2300 * 36000;
+  private alive = true;
+
+  constructor(private readonly dataBusService: DataBusService) {
+  }
+
+  ngOnInit(): void {
+    this.dataBusService.count$.subscribe((data) => {
+      this.energyHourlyData = data;
+      const energyHourlyValue = this.energyHourlyData.map((item) => [+item.time, item.value]);
+      this.chartOptions = this.getChartOptions(energyHourlyValue);
+    });
+  }
+
+  ngOnDestroy() {
+    this.alive = false;
+  }
 
 
-  getChart() {
-    this.chartOptions = {
+
+  getChartOptions(energyHourlyValue): any {
+    return  {
       series: [{
         name: 'energy days',
         pointInterval: 24 * 3600 * 1000,
-        //pointStart: this.startDay,
-        data: this.energyHourlyValue,
-      }, ],
+        data: energyHourlyValue,
+      }],
       chart: {
         panning: true,
         panKey: 'shift',
@@ -41,24 +53,18 @@ export class HighchartsComponent implements OnInit {
         enabled: false, // remove logo
       },
 
-      plotOptions: {series: {dataLabels: {
-        enabled: true
-        }}},
+      plotOptions: {
+        series: {
+          dataLabels: {
+            enabled: true
+          }
+        }
+      },
 
       xAxis: {
-         type: 'datetime',
-         minRange: 15 * 2300 * 36000,
-      },
-    }
-
+        type: 'datetime',
+        minRange: this.MIN_RANGE,
+      }
+    };
   }
-
-  constructor(private readonly dataBusService: DataBusService) { }
-
-  ngOnInit(): void {
-    this.dataBusService.count$.subscribe((data) => { this.energyHourlyData = data;
-                                                     this.energyHourlyValue = this.energyHourlyData.map((item) => [+item.time, item.value]);
-                                                     this.getChart();
-    });
-}
 }
