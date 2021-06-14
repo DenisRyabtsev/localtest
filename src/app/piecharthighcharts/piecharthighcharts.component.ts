@@ -42,7 +42,7 @@ export class PiecharthighchartsComponent implements OnInit {
   constructor(private readonly dataBusService: DataBusService) { }
 
   ngOnInit(): void {
-          this.dataBusService.AvgWeek$.subscribe((data) => { this.energyAvgWeek = data;
+          this.dataBusService.avgWeek$.subscribe((data) => { this.energyAvgWeek = data;
           this.energyAvgWeekValue = this.energyAvgWeek.map(({ time, value, day}) => ([time.format('YYYY/MMMM  wo'), +(value / day).toFixed(0)]));
           this.getChart();
           console.log(this.energyAvgWeek);
