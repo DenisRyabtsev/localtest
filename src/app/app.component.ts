@@ -94,9 +94,7 @@ export class AppComponent implements OnInit {
 
     return this.updatedValueHourly;
   }
-
-
-
+  
 
 
   private wrapToDayData(): MomentValue[] {
