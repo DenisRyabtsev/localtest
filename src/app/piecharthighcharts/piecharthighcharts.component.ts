@@ -10,43 +10,42 @@ import {AverageValues} from '../AverageValues';
   styleUrls: ['./piecharthighcharts.component.css']
 })
 export class PiecharthighchartsComponent implements OnInit {
+
   public energyAvgWeek: AverageValues[];
   private energyAvgWeekValue;
-
   highcharts = Highcharts;
   chartOptions: any;
 
-  getChart() {
-    this.chartOptions = {
+  constructor(private readonly dataBusService: DataBusService) {
+  }
+
+  ngOnInit(): void {
+    this.dataBusService.avgWeek$.subscribe((data) => {
+      this.energyAvgWeek = data;
+      this.energyAvgWeekValue = this.energyAvgWeek.map(({time, value, day}) => ([time.format('YYYY/MMMM  wo'), +(value / day).toFixed(0)]));
+      this.chartOptions = this.getchartOptions(this.energyAvgWeekValue);
+    });
+
+  }
+
+  getchartOptions(energyAvgWeekValue) {
+    return {
       series: [{
         name: 'energy',
-        data: this.energyAvgWeekValue,
-      }, ],
+        data: energyAvgWeekValue,
+      },],
       chart: {
         type: 'pie',
         zoomType: 'x'
       },
       title: {
         text:
-          'average electrical energy by day of the week',
+          'average daily electricity by week ',
       },
       credits: {
         enabled: false, // remove logo
       },
-      }
-    }
+    };
+  }
 
-
-
-
-  constructor(private readonly dataBusService: DataBusService) { }
-
-  ngOnInit(): void {
-          this.dataBusService.avgWeek$.subscribe((data) => { this.energyAvgWeek = data;
-          this.energyAvgWeekValue = this.energyAvgWeek.map(({ time, value, day}) => ([time.format('YYYY/MMMM  wo'), +(value / day).toFixed(0)]));
-          this.getChart();
-          console.log(this.energyAvgWeek);
-          })
-
-}
 }

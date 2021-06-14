@@ -1,7 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import * as Highcharts from 'highcharts';
 import {MomentValue} from '../MomentValue';
 import {DataBusService} from '../data-bus.service';
-import * as Highcharts from 'highcharts';
 
 
 @Component({
@@ -9,12 +9,13 @@ import * as Highcharts from 'highcharts';
   templateUrl: './highcharts.component.html',
   styleUrls: ['./highcharts.component.css']
 })
-export class HighchartsComponent implements OnInit, OnDestroy {
+export class HighchartsComponent implements OnInit {
+
   public energyHourlyData: MomentValue[];
+  public energyHourlyValue: (number)[][];
+  highcharts: typeof Highcharts = Highcharts;
   chartOptions: any;
-  highcharts = Highcharts;
   private readonly MIN_RANGE = 15 * 2300 * 36000;
-  private alive = true;
 
   constructor(private readonly dataBusService: DataBusService) {
   }
@@ -22,27 +23,20 @@ export class HighchartsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.dataBusService.count$.subscribe((data) => {
       this.energyHourlyData = data;
-      const energyHourlyValue = this.energyHourlyData.map((item) => [+item.time, item.value]);
-      this.chartOptions = this.getChartOptions(energyHourlyValue);
+      this.energyHourlyValue = this.energyHourlyData.map(item => [+item.time, item.value]);
+      this.chartOptions = this.getChartOptions(this.energyHourlyValue);
+      console.log(this.energyHourlyValue)
     });
   }
 
-  ngOnDestroy() {
-    this.alive = false;
-  }
-
-
-
-  getChartOptions(energyHourlyValue): any {
-    return  {
+  getChartOptions(energyHourlyValue) {
+    return {
       series: [{
         name: 'energy days',
-        pointInterval: 24 * 3600 * 1000,
-        data: energyHourlyValue,
-      }],
+        pointInterval: energyHourlyValue,
+        data: this.energyHourlyValue,
+      },],
       chart: {
-        panning: true,
-        panKey: 'shift',
         type: 'column',
         zoomType: 'x'
       },
@@ -53,18 +47,14 @@ export class HighchartsComponent implements OnInit, OnDestroy {
         enabled: false, // remove logo
       },
 
-      plotOptions: {
-        series: {
-          dataLabels: {
+      plotOptions: {series: {dataLabels: {
             enabled: true
-          }
-        }
-      },
+          }}},
 
       xAxis: {
         type: 'datetime',
         minRange: this.MIN_RANGE,
-      }
-    };
+      },
+    }
   }
 }

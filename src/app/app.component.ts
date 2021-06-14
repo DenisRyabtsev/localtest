@@ -1,10 +1,9 @@
-import { Component,  OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MomentValue} from './MomentValue';
 import {JsonService} from './json.service';
 import * as moment from 'moment';
 import {JsonData} from './JsonData';
 import {RangeValues} from './datepicker/datepicker.component';
-import {fromEvent, of} from 'rxjs';
 import {DataBusService} from './data-bus.service';
 import {AverageValues} from './AverageValues';
 
@@ -14,23 +13,25 @@ import {AverageValues} from './AverageValues';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+
 export class AppComponent implements OnInit {
 
-  constructor(private jsonService: JsonService,
-              private dataBusService: DataBusService) {
-  }
   public callNumber = 1;
   private updatedAr: MomentValue[];
   private energyData: MomentValue[];
   private updatedValueHourly: MomentValue[];
   public updatedValueDay: MomentValue[];
   public updatedValueWeek: MomentValue[];
+  public updatedValueWeekDay: MomentValue[];
   meterData: JsonData;
   avgHourly: number;
   sotrEnergyHourly;
   sotrEnergyDaily;
   public daterange: RangeValues = {};
 
+  constructor(private jsonService: JsonService,
+              private dataBusService: DataBusService) {
+  }
 
 
   ngOnInit(): void {
@@ -40,7 +41,8 @@ export class AppComponent implements OnInit {
         this.energyData = this.parseEnergyData(this.meterData);
         this.dataBusService.pushValueHourly(this.wrapToDayData());
         this.dataBusService.pushAvgWeek(this.calculateAvgWeek());
-       }
+        this.dataBusService.pushAvgWeekDays(this.wrapToWeekDayData());
+      }
     });
   }
 
@@ -52,7 +54,11 @@ export class AppComponent implements OnInit {
     this.daterange.start = daterang.start;
     this.daterange.end = daterang.end;
     this.dataBusService.pushValueHourly(this.wrapToDayData());
-    this.dataBusService.pushAvgWeek(this.calculateAvgWeek())
+    this.dataBusService.pushAvgWeek(this.calculateAvgWeek());
+    this.dataBusService.pushAvgWeekDays(this.wrapToWeekDayData());
+    this.getMaximumHour();
+    this.getMinimumDay();
+    this.calculateAvgHourly();
   }
 
   private sortValuesInterval(): MomentValue[] {
@@ -72,7 +78,7 @@ export class AppComponent implements OnInit {
   }
 
   public wrapToHourlyData(): MomentValue[] {
-    this.updatedValueHourly =  this.sortValuesInterval().reduce((acc: any, curr: any) => {
+    this.updatedValueHourly = this.sortValuesInterval().reduce((acc: any, curr: any) => {
       const date = curr.time;
       const findElement = acc.find((item) => {
         return (
@@ -94,6 +100,7 @@ export class AppComponent implements OnInit {
 
     return this.updatedValueHourly;
   }
+
 
   private wrapToDayData(): MomentValue[] {
     this.updatedValueDay = this.sortValuesInterval().reduce((acc: any, curr: any) => {
@@ -125,11 +132,12 @@ export class AppComponent implements OnInit {
       const findElement = acc.find((item) => {
         return (
           item.time.date() === date.date(),
-           item.time.week() === date.week()
+          item.time.week() === date.week()
         );
       });
 
       if (findElement) {
+        // debugger;
         findElement.value += curr.value;
         findElement.day++;
       } else {
@@ -145,9 +153,37 @@ export class AppComponent implements OnInit {
     return this.updatedValueWeek;
   }
 
+  private wrapToWeekDayData(): AverageValues[] {
+
+    this.updatedValueWeekDay = this.wrapToDayData().reduce((acc: any, curr: any) => {
+      curr.day = 1;
+      const date = curr.time;
+      const findElement = acc.find((item) => {
+        return (
+          item.time.weekday() === date.weekday()
+        );
+      });
+
+      if (findElement) {
+        // debugger;
+        findElement.value += curr.value;
+        findElement.day++;
+      } else {
+        acc.push({
+          time: curr.time,
+          value: curr.value,
+          day: curr.day
+        });
+
+      }
+      return acc;
+    }, []);
+    return this.updatedValueWeekDay;
+  }
+
   calculateAvgWeek() {
-   return  this.wrapToWeekData();
-    }
+    return this.wrapToWeekData();
+  }
 
 
   getMaximumHour() {
@@ -167,12 +203,4 @@ export class AppComponent implements OnInit {
     }
     this.avgHourly = sum / this.updatedValueHourly.length;
   }
-  //
-  // public euros = [29.76, 41, 46.5];
-  //
-  // public average = this.euros.reduce((total, amount) => {
-  //   debugger
-  //   total.push(amount * 2);
-  //   return total;
-  // }, []);
 }

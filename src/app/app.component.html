@@ -1,52 +1,50 @@
 <div class="container">
-
-
-<app-datepicker [meterData]="meterData" (SelectedInterval)="getSelectedInterval($event)"></app-datepicker>
-
-<div class="wrapper" >
-  <ul *ngIf="meterData != null">
-    <li>название счетчика meterName: {{meterData.meterName }}</li>
-    <li>название канала данных channelName{{meterData.channelName }} </li>
-  </ul>
-  <div>
-    <ul>
-      Час когда было использовано максимум электричества
-      <li>
-        <button  *ngIf="sotrEnergyHourly == null" (click)=" getMaximumHour()"> Получить</button>
-
-
-        <div *ngIf="sotrEnergyHourly!">
-          {{sotrEnergyHourly[0].time.format('hh:mm LL')}}
-
-        </div>
-
-
-      </li>
-      День когда было использовано минимум электричества
-      <li>
-        <button  *ngIf="sotrEnergyDaily == null" (click)="  getMinimumDay()"> Получить</button>
-
-
-        <div *ngIf="sotrEnergyDaily!">
-          {{sotrEnergyDaily[0].time.format('LL')}}
-
-        </div>
-
-
-      </li>
-
-      Среднечасовая использованная энергия
-      <li>
-        <button *ngIf="avgHourly == null" (click)="calculateAvgHourly()"> Получить</button>
-
-        <div *ngIf="avgHourly!= null">
-          {{avgHourly.toFixed(2)}} Wh
-        </div>
-
-      </li>
+  <app-datepicker [meterData]="meterData" (SelectedInterval)="getSelectedInterval($event)"></app-datepicker>
+  <div class="wrapper">
+    <ul *ngIf="meterData != null">
+      <li>название счетчика meterName: {{meterData.meterName }}</li>
+      <li>название канала данных channelName{{meterData.channelName }} </li>
     </ul>
+    <div>
+      <ul>
+        Час когда было использовано максимум электричества
+        <li>
+          <button *ngIf="sotrEnergyHourly == null" (click)=" getMaximumHour()"> Показать за весь период</button>
+
+
+          <div *ngIf="sotrEnergyHourly">
+            {{sotrEnergyHourly[0].time.format('hh:mm LL')}}
+
+          </div>
+
+
+        </li>
+        День когда было использовано минимум электричества
+        <li>
+          <button *ngIf="sotrEnergyDaily == null" (click)="  getMinimumDay()"> Показать за весь период</button>
+
+
+          <div *ngIf="sotrEnergyDaily!">
+            {{sotrEnergyDaily[0].time.format('LL')}}
+
+          </div>
+
+
+        </li>
+
+        Среднечасовая использованная энергия
+        <li>
+          <button *ngIf="avgHourly == null" (click)="calculateAvgHourly()"> Показать за весь период</button>
+          <div *ngIf="avgHourly!= null">
+            {{avgHourly.toFixed(2)}} Wh
+          </div>
+
+        </li>
+      </ul>
+    </div>
+    <app-highcharts></app-highcharts>
+    <app-piecharthighcharts></app-piecharthighcharts>
+    <app-average-consumption-by-day-highcharts></app-average-consumption-by-day-highcharts>
   </div>
 </div>
 
-<app-highcharts ></app-highcharts>
-<app-piecharthighcharts> </app-piecharthighcharts>
