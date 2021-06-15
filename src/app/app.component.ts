@@ -45,9 +45,8 @@ export class AppComponent implements OnInit {
       }
     });
     this.dataBusService.datePicker$.subscribe((data) => {
-      this.daterange = data;
       console.log(this.daterange);
-      this.getSelectedInterval(this.daterange);
+      this.getSelectedInterval(data);
     });
   }
 
