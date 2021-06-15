@@ -44,6 +44,11 @@ export class AppComponent implements OnInit {
         this.dataBusService.pushAvgWeekDays(this.wrapToWeekDayData());
       }
     });
+    this.dataBusService.datePicker$.subscribe((data) => {
+      this.daterange = data;
+      console.log(this.daterange);
+      this.getSelectedInterval(this.daterange);
+    });
   }
 
   private parseEnergyData(data: JsonData): MomentValue[] {

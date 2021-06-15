@@ -16,7 +16,7 @@ export interface RangeValues {
 export class DatepickerComponent implements OnInit {
 
   @Input() meterData: JsonData;
-  @Output() SelectedInterval = new EventEmitter();
+  // @Output() SelectedInterval = new EventEmitter();
   @ViewChild(DaterangepickerComponent)
   private picker: DaterangepickerComponent;
   public daterange: RangeValues = {};
@@ -27,9 +27,9 @@ export class DatepickerComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  pushValue() {
-    this.SelectedInterval.emit(this.daterange);
-  }
+  // pushValue() {
+  //   this.SelectedInterval.emit(this.daterange);
+  // }
 
   public options: any = {
     locale: {format: 'YYYY-MM-DD HH:mm'},
@@ -42,6 +42,7 @@ export class DatepickerComponent implements OnInit {
   public selectedDateJson(value: any) {
     this.daterange.start = value.start;
     this.daterange.end = value.end;
+    this.dataBusService.pushDatePicker(this.daterange);
   }
 
   resetDate1() {
